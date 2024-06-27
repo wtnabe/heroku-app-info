@@ -1,0 +1,2 @@
+nanashi       admin
+nanashi-team  admin

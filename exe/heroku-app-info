@@ -1,0 +1,12 @@
+#! /usr/bin/env ruby
+
+require_relative "../lib/heroku_app_info"
+
+module HerokuAppInfo
+  def main
+    Cli.new(root: File.dirname(__dir__)).execute
+  end
+  module_function :main
+end
+
+HerokuAppInfo.main

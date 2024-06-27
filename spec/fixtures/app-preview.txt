@@ -1,0 +1,11 @@
+=== app-preview
+Auto Cert Mgmt: false
+Dynos:
+Git URL:        https://git.heroku.com/app-preview.git
+Owner:          nanashi-team@herokumanager.com
+Pipeline:       app-reviews - staging
+Region:         us
+Repo Size:      0 B
+Slug Size:      0 B
+Stack:          heroku-22
+Web URL:        https://app.herokuapp.com/

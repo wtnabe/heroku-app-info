@@ -1,0 +1,16 @@
+=== app
+Addons:         heroku-postgresql:essential-1
+                heroku-redis:premium-0
+                memcachedcloud:30
+                papertrail:fixa
+                scheduler:standard
+Auto Cert Mgmt: true
+Collaborators:  nanashi@example.jp
+Dynos:          web: 1, worker: 1
+Git URL:        https://git.heroku.com/app.git
+Owner:          nanashi-team@herokumanager.com
+Region:         us
+Repo Size:      6 MB
+Slug Size:      169 MB
+Stack:          heroku-20
+Web URL:        https://app.herokuapp.com/

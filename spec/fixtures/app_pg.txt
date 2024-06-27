@@ -1,0 +1,12 @@
+=== DATABASE_URL
+Plan:                  essential-1
+Status:                Available
+Connections:           2/20
+PG Version:            14.11
+Created:               2021-01-01 00:00 
+Data Size:             101 MB / 10 GB (0.99%) (In compliance)
+Tables:                43/4000 (In compliance)
+Fork/Follow:           Unsupported
+Rollback:              Unsupported
+Continuous Protection: Off
+Add-on:                postgresql-elliptical-22765
