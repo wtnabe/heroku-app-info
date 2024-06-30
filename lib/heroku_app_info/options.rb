@@ -10,7 +10,7 @@ module HerokuAppInfo
       @parser = cli_parser
       @rest = @parser.parse(argv)
     end
-    attr_reader :apps, :out_dir, :rest
+    attr_reader :apps, :out_dir, :authz, :rest
 
     #
     # @return [Boolean]
@@ -64,6 +64,9 @@ module HerokuAppInfo
         end
         opt.on("-s", "--show-all-apps", "not include detail") do
           @show_all = true
+        end
+        opt.on("-z", "--authorizarion AUTH") do |auth|
+          @authz = auth
         end
 
         opt.version = VERSION

@@ -1,6 +1,7 @@
 require_relative "fetcher"
 require_relative "options"
 require_relative "parser"
+require_relative "writer"
 
 module HerokuAppInfo
   class Cli
@@ -11,6 +12,8 @@ module HerokuAppInfo
 
     def execute
       @options = Options.new(ARGV.dup)
+
+      set_authz! if @options.authz
 
       @fetcher = Fetcher.new(@options)
       @parser = Parser.new
@@ -25,6 +28,15 @@ module HerokuAppInfo
           end
         dump_app_and_pg_details(apps)
       end
+    end
+
+    #
+    # set API KEY to Environment Variable
+    #
+    # Currently, Heroku Account require MFA, so the login and password method is not supported
+    #
+    def set_authz!
+      ENV["HEROKU_API_KEY"] = @options.authz
     end
 
     #
