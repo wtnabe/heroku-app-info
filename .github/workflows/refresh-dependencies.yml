@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: 4 10 * * */1
 
+env:
+  GITHUB_ACTIONS: $GITHUB_ACTIONS
+  GITHUB_ACTOR: $GITHUB_ACTOR
+
 jobs:
   update-image:
     runs-on: ubuntu-latest
@@ -16,13 +20,12 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-      - run: bundle install
       - run: ./bin/build
       - name: current date
         run: echo "CURRENT_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
       - run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-          docker tag heroku-app-info ghcr.io/$GITHUB_ACTOR/heroku-app-info:latest
-          docker tag heroku-app-info ghcr.io/$GITHUB_ACTOR/heroku-app-info:{{ env.CURRENT_DATE }}
-          docker push ghcr.io/$GITHUB_ACTOR/heroku-app-info:latest
-          docker push ghcr.io/$GITHUB_ACTOR/heroku-app-info:{{ env.CURRENT_DATE }}
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ env.GITHUB_ACTOR }} --password-stdin
+          docker tag heroku-app-info:latest ghcr.io/${{ env.GITHUB_ACTOR }}/heroku-app-info:latest
+          docker tag heroku-app-info:latest ghcr.io/${{ env.GITHUB_ACTOR }}/heroku-app-info:${{ env.CURRENT_DATE }}
+          docker push ghcr.io/${{ env.GITHUB_ACTOR }}/heroku-app-info:latest
+          docker push ghcr.io/${{ env.GITHUB_ACTOR }}/heroku-app-info:${{ env.CURRENT_DATE }}

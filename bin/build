@@ -1,37 +1,50 @@
-#! /bin/sh
+#! /bin/bash
 
 ROOT=$(dirname `dirname $0`)
 
-bundle exec rake clean
-bundle exec rake build
-bundle exec ruby -e '
-require "webrick"
+if [ -z $GITHUB_ACTIONS ]; then
+  bundle exec rake clean
+  bundle exec rake build
+  echo "starting webrick server"
+  bundle exec ruby -e "
+require 'webrick'
 
 Process.daemon(true)
 
-File.open("webrick.pid", "w") { |f|
-  WEBrick::HTTPServer.new(
-    DocumentRoot: "./pkg",
+File.open('webrick.pid', 'w') { |f|
+  server = WEBrick::HTTPServer.new(
     StartCallback: -> {
-      f.puts $$
+      f.puts \$\$
       f.flush
     }
-  ).start
+  )
+  server.mount('/downloads', WEBrick::HTTPServlet::FileHandler, '$ROOT/pkg')
+  server.start
 }
-'
+"
+fi
 
 RUBY_VERSION=3.3.1
 
-PKG_VERSION=`ruby -r ${ROOT}/lib/heroku_app_info/version.rb -e 'puts HerokuAppInfo::VERSION'`
-DATE=`ruby -r date -e 'puts Date.today.to_s.gsub("-","")'`
+if [ -n "$GITHUB_ACTIONS" ]; then
+  GEM_HOST=rubygems.org
+  CACHE_OPTS="--cache-from type=gha --cache-to type=gha"
+else
+  GEM_HOST=host.docker.internal
+fi
 
-docker build -t heroku-app-info \
-       --no-cache \
+PKG_VERSION=`ruby -r ${ROOT}/lib/heroku_app_info/version.rb -e 'puts HerokuAppInfo::VERSION'`
+
+mkdir -p $ROOT/pkg
+
+docker $BUILDX build -t heroku-app-info \
+       $CACHE_OPTS \
        --add-host host.docker.internal:host-gateway \
        --build-arg GEM_HOST=$GEM_HOST \
        --build-arg RUBY_VERSION=$RUBY_VERSION \
        --build-arg PKG_VERSION=$PKG_VERSION \
        -f Dockerfile $ROOT/pkg
-docker tag heroku-app-info:latest heroku-app-info:$DATE
 
-kill -KILL `cat webrick.pid` && rm webrick.pid
+if [ -e webrick.pid ]; then
+  kill -KILL `cat webrick.pid` && rm webrick.pid
+fi
