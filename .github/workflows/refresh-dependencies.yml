@@ -1,0 +1,28 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 4 10 * * */1
+
+jobs:
+  update-image:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+      - run: bundle install
+      - run: ./bin/build
+      - name: current date
+        run: echo "CURRENT_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          docker tag heroku-app-info ghcr.io/$GITHUB_ACTOR/heroku-app-info:latest
+          docker tag heroku-app-info ghcr.io/$GITHUB_ACTOR/heroku-app-info:{{ env.CURRENT_DATE }}
+          docker push ghcr.io/$GITHUB_ACTOR/heroku-app-info:latest
+          docker push ghcr.io/$GITHUB_ACTOR/heroku-app-info:{{ env.CURRENT_DATE }}

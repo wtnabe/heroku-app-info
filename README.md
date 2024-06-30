@@ -6,6 +6,8 @@ It is primarily intended to be used for creating maintenance plans for Stack and
 
 ## Installation
 
+### rubygems
+
 Install the gem and add to the application's Gemfile by executing:
 
     $ bundle add heroku-app-info
@@ -18,10 +20,24 @@ And, at the moment it depends on the Heroku CLI.
 
 [The Heroku CLI \| Heroku Dev Center](https://devcenter.heroku.com/articles/heroku-cli)
 
+### Docker
+
+    $ docker pull ghcr.io/wtnabe/heroku-app-info:latest
+
+including Heroku CLI ;-)
+
 ## Usage
+
+### rubygems
 
 ```
 $ heroku-app-info -h
+```
+
+### Docker
+
+```
+$ docker run --rm -ti -v .:/workspace ghcr.io/wtnabe/heroku-app-info -z <API_TOKEN> -a APP,APP,...
 ```
 
 ## Development
