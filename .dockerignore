@@ -1,0 +1,12 @@
+**/.DS_Store
+**/*~
+**/*.bak
+**/*.pid
+**/.*
+**/_yardoc/
+**/coverage/
+**/doc/
+**/pkg/
+**/spec
+**/tmp/
+**/example/

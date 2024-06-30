@@ -1,0 +1,37 @@
+#! /bin/sh
+
+ROOT=$(dirname `dirname $0`)
+
+bundle exec rake clean
+bundle exec rake build
+bundle exec ruby -e '
+require "webrick"
+
+Process.daemon(true)
+
+File.open("webrick.pid", "w") { |f|
+  WEBrick::HTTPServer.new(
+    DocumentRoot: "./pkg",
+    StartCallback: -> {
+      f.puts $$
+      f.flush
+    }
+  ).start
+}
+'
+
+RUBY_VERSION=3.3.1
+
+PKG_VERSION=`ruby -r ${ROOT}/lib/heroku_app_info/version.rb -e 'puts HerokuAppInfo::VERSION'`
+DATE=`ruby -r date -e 'puts Date.today.to_s.gsub("-","")'`
+
+docker build -t heroku-app-info \
+       --no-cache \
+       --add-host host.docker.internal:host-gateway \
+       --build-arg GEM_HOST=$GEM_HOST \
+       --build-arg RUBY_VERSION=$RUBY_VERSION \
+       --build-arg PKG_VERSION=$PKG_VERSION \
+       -f Dockerfile $ROOT/pkg
+docker tag heroku-app-info:latest heroku-app-info:$DATE
+
+kill -KILL `cat webrick.pid` && rm webrick.pid
