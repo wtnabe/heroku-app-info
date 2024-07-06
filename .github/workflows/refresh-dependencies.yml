@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
   schedule:
-    - cron: '4 10 * * */1'
+    - cron: '4 10 * * 1'
 
 env:
   GITHUB_ACTIONS: $GITHUB_ACTIONS
